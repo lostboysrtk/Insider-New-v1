@@ -595,17 +595,7 @@ class SignInViewController: UIViewController {
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
-    
-    private let gradientLayer: CAGradientLayer = {
-        let gradient = CAGradientLayer()
-        gradient.colors = [
-            UIColor(red: 0.93, green: 0.95, blue: 0.98, alpha: 1).cgColor,
-            UIColor(red: 0.88, green: 0.92, blue: 0.97, alpha: 1).cgColor,
-            UIColor(red: 0.85, green: 0.90, blue: 0.96, alpha: 1).cgColor
-        ]
-        gradient.locations = [0.0, 0.5, 1.0]
-        return gradient
-    }()
+
     
     private func setupStaticBubbles() {
         let configs: [(CGFloat, CGFloat, CGFloat, CGFloat, CGFloat)] = [
@@ -617,7 +607,7 @@ class SignInViewController: UIViewController {
         let reds: [CGFloat] = [0.40, 0.40, 0.20]
         for (i, c) in configs.enumerated() {
             let bubble = UIView(frame: CGRect(x: c.0, y: c.1, width: c.2, height: c.3))
-            bubble.backgroundColor = UIColor(red: reds[i], green: 0.55, blue: 0.85, alpha: alphas[i])
+            bubble.backgroundColor = UIColor.brand.withAlphaComponent(alphas[i])
             bubble.layer.cornerRadius = c.4
             view.insertSubview(bubble, belowSubview: scrollView)
         }
@@ -627,7 +617,7 @@ class SignInViewController: UIViewController {
         let lbl = UILabel()
         lbl.text = "Welcome Back"
         lbl.font = UIFont.systemFont(ofSize: 42, weight: .bold)
-        lbl.textColor = UIColor(red: 0.10, green: 0.10, blue: 0.12, alpha: 1)
+        lbl.textColor = .label
         lbl.translatesAutoresizingMaskIntoConstraints = false
         return lbl
     }()
@@ -635,7 +625,7 @@ class SignInViewController: UIViewController {
         let lbl = UILabel()
         lbl.text = "Sign in to continue"
         lbl.font = UIFont.systemFont(ofSize: 18, weight: .regular)
-        lbl.textColor = UIColor(red: 0.25, green: 0.25, blue: 0.28, alpha: 1)
+        lbl.textColor = .secondaryLabel
         lbl.translatesAutoresizingMaskIntoConstraints = false
         return lbl
     }()
@@ -643,31 +633,31 @@ class SignInViewController: UIViewController {
         let lbl = UILabel()
         lbl.text = "Continue your tech journey"
         lbl.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        lbl.textColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1)
+        lbl.textColor = .brand
         lbl.translatesAutoresizingMaskIntoConstraints = false
         return lbl
     }()
     
     private func createTextField(_ placeholder: String, icon: String) -> UIView {
         let container = UIView()
-        container.backgroundColor = UIColor.white.withAlphaComponent(0.75)
-        container.layer.cornerRadius = 18
-        container.layer.borderColor = UIColor.white.withAlphaComponent(0.9).cgColor
-        container.layer.borderWidth = 1.5
+        container.backgroundColor = UIColor.secondarySystemGroupedBackground
+        container.layer.cornerRadius = 29
+        container.layer.borderColor = UIColor.separator.cgColor
+        container.layer.borderWidth = 1.0
         container.translatesAutoresizingMaskIntoConstraints = false
-        container.layer.shadowColor = UIColor(red: 0.12, green: 0.25, blue: 0.55, alpha: 0.08).cgColor
+        container.layer.shadowColor = UIColor.label.withAlphaComponent(0.06).cgColor
         container.layer.shadowOffset = CGSize(width: 0, height: 4)
         container.layer.shadowRadius = 12
         container.layer.shadowOpacity = 1
         let iconView = UIImageView(image: UIImage(systemName: icon))
-        iconView.tintColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1)
+        iconView.tintColor = .brand
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.contentMode = .scaleAspectFit
         let textField = UITextField()
-        textField.textColor = UIColor(red: 0.10, green: 0.10, blue: 0.12, alpha: 1)
+        textField.textColor = .label
         textField.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         textField.attributedPlaceholder = NSAttributedString(string: placeholder,
-            attributes: [.foregroundColor: UIColor(red: 0.40, green: 0.40, blue: 0.45, alpha: 1)])
+            attributes: [.foregroundColor: UIColor.placeholderText])
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.autocorrectionType = .no; textField.returnKeyType = .done; textField.autocapitalizationType = .none
         container.addSubview(iconView); container.addSubview(textField)
@@ -694,14 +684,14 @@ class SignInViewController: UIViewController {
     private let togglePasswordButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setImage(UIImage(systemName: "eye.slash.fill"), for: .normal)
-        btn.tintColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1)
+        btn.tintColor = .brand
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
     }()
     private let forgotPasswordButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("Forgot Password?", for: .normal)
-        btn.setTitleColor(UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1), for: .normal)
+        btn.setTitleColor(.brand, for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
@@ -711,19 +701,19 @@ class SignInViewController: UIViewController {
         btn.setTitle("Sign In", for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         btn.setTitleColor(.white, for: .normal)
-        btn.backgroundColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1)
-        btn.layer.cornerRadius = 18
+        btn.backgroundColor = .brand
+        btn.layer.cornerRadius = 29
         btn.translatesAutoresizingMaskIntoConstraints = false
-        btn.layer.shadowColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 0.4).cgColor
+        btn.layer.shadowColor = UIColor.brand.withAlphaComponent(0.4).cgColor
         btn.layer.shadowOffset = CGSize(width: 0, height: 8)
         btn.layer.shadowRadius = 16; btn.layer.shadowOpacity = 1
         return btn
     }()
     private let dividerView: UIView = {
         let view = UIView(); view.translatesAutoresizingMaskIntoConstraints = false
-        let ll = UIView(); ll.backgroundColor = UIColor(red: 0.70, green: 0.70, blue: 0.75, alpha: 1); ll.translatesAutoresizingMaskIntoConstraints = false
-        let rl = UIView(); rl.backgroundColor = UIColor(red: 0.70, green: 0.70, blue: 0.75, alpha: 1); rl.translatesAutoresizingMaskIntoConstraints = false
-        let lbl = UILabel(); lbl.text = "or continue with"; lbl.font = UIFont.systemFont(ofSize: 13, weight: .medium); lbl.textColor = UIColor(red: 0.40, green: 0.40, blue: 0.45, alpha: 1); lbl.translatesAutoresizingMaskIntoConstraints = false
+        let ll = UIView(); ll.backgroundColor = .separator; ll.translatesAutoresizingMaskIntoConstraints = false
+        let rl = UIView(); rl.backgroundColor = .separator; rl.translatesAutoresizingMaskIntoConstraints = false
+        let lbl = UILabel(); lbl.text = "or continue with"; lbl.font = UIFont.systemFont(ofSize: 13, weight: .medium); lbl.textColor = .secondaryLabel; lbl.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(ll); view.addSubview(rl); view.addSubview(lbl)
         NSLayoutConstraint.activate([
             lbl.centerXAnchor.constraint(equalTo: view.centerXAnchor), lbl.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -743,24 +733,25 @@ class SignInViewController: UIViewController {
             btn.setImage(resized, for: .normal)
         } else {
             btn.setImage(UIImage(systemName: "globe"), for: .normal)
-            btn.tintColor = UIColor(red: 0.10, green: 0.10, blue: 0.12, alpha: 1)
+            btn.tintColor = .label
         }
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
-        btn.setTitleColor(UIColor(red: 0.10, green: 0.10, blue: 0.12, alpha: 1), for: .normal)
-        btn.backgroundColor = UIColor.white.withAlphaComponent(0.85)
-        btn.layer.cornerRadius = 16; btn.layer.borderColor = UIColor(red: 0.85, green: 0.87, blue: 0.90, alpha: 1).cgColor; btn.layer.borderWidth = 1.5
+        btn.setTitleColor(.label, for: .normal)
+        btn.backgroundColor = .secondarySystemGroupedBackground
+        btn.layer.cornerRadius = 28; btn.layer.borderColor = UIColor.separator.cgColor; btn.layer.borderWidth = 1.0
         btn.translatesAutoresizingMaskIntoConstraints = false; return btn
     }()
     private lazy var signUpButton: UIButton = {
         let btn = UIButton(type: .system)
         let fullText = "Don't have an account?  Sign Up"
         let attr = NSMutableAttributedString(string: fullText)
+        let fullRange = NSRange(location: 0, length: fullText.count)
+        attr.addAttribute(.foregroundColor, value: UIColor.secondaryLabel, range: fullRange)
+        attr.addAttribute(.font, value: UIFont.systemFont(ofSize: 15, weight: .regular), range: fullRange)
         let range = (fullText as NSString).range(of: "Sign Up")
-        attr.addAttribute(.foregroundColor, value: UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1), range: range)
+        attr.addAttribute(.foregroundColor, value: UIColor.brand, range: range)
         attr.addAttribute(.font, value: UIFont.systemFont(ofSize: 15, weight: .bold), range: range)
         btn.setAttributedTitle(attr, for: .normal)
-        btn.setTitleColor(UIColor(red: 0.40, green: 0.40, blue: 0.45, alpha: 1), for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .regular)
         btn.translatesAutoresizingMaskIntoConstraints = false; return btn
     }()
     
@@ -768,14 +759,30 @@ class SignInViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupGradientBackground(); setupUI(); setupActions()
+        view.backgroundColor = .systemBackground
+        setupUI(); setupActions()
         setupKeyboardHandling(); setupStaticBubbles()
+        updateDynamicColors()
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        gradientLayer.frame = view.bounds
     }
-    private func setupGradientBackground() { view.layer.insertSublayer(gradientLayer, at: 0) }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateDynamicColors()
+        }
+    }
+    
+    private func updateDynamicColors() {
+        // Refresh CGColor properties that don't auto-adapt
+        emailContainer.layer.borderColor = UIColor.separator.cgColor
+        emailContainer.layer.shadowColor = UIColor.label.withAlphaComponent(0.06).cgColor
+        passwordContainer.layer.borderColor = UIColor.separator.cgColor
+        passwordContainer.layer.shadowColor = UIColor.label.withAlphaComponent(0.06).cgColor
+        googleButton.layer.borderColor = UIColor.separator.cgColor
+    }
     
     private func setupUI() {
         view.addSubview(scrollView); scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -1050,9 +1057,9 @@ extension SignInViewController: UITextFieldDelegate {
 class MainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         let homeVC = UIViewController()
-        homeVC.view.backgroundColor = .white
+        homeVC.view.backgroundColor = .systemBackground
         homeVC.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 0)
         viewControllers = [homeVC]
     }

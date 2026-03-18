@@ -583,29 +583,19 @@ class SignUpViewController: UIViewController {
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
-    
-    private let gradientLayer: CAGradientLayer = {
-        let gradient = CAGradientLayer()
-        gradient.colors = [
-            UIColor(red: 0.93, green: 0.95, blue: 0.98, alpha: 1).cgColor,
-            UIColor(red: 0.88, green: 0.92, blue: 0.97, alpha: 1).cgColor,
-            UIColor(red: 0.85, green: 0.90, blue: 0.96, alpha: 1).cgColor
-        ]
-        gradient.locations = [0.0, 0.5, 1.0]
-        return gradient
-    }()
+
     
     private func setupStaticBubbles() {
         let bubble1 = UIView(frame: CGRect(x: view.frame.width - 150, y: -50, width: 300, height: 300))
-        bubble1.backgroundColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 0.08)
+        bubble1.backgroundColor = UIColor.brand.withAlphaComponent(0.08)
         bubble1.layer.cornerRadius = 150
         view.insertSubview(bubble1, belowSubview: scrollView)
         let bubble2 = UIView(frame: CGRect(x: -60, y: view.frame.height * 0.4, width: 180, height: 180))
-        bubble2.backgroundColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 0.06)
+        bubble2.backgroundColor = UIColor.brand.withAlphaComponent(0.06)
         bubble2.layer.cornerRadius = 90
         view.insertSubview(bubble2, belowSubview: scrollView)
         let bubble3 = UIView(frame: CGRect(x: view.frame.width * 0.6, y: view.frame.height * 0.85, width: 250, height: 250))
-        bubble3.backgroundColor = UIColor(red: 0.20, green: 0.35, blue: 0.65, alpha: 0.05)
+        bubble3.backgroundColor = UIColor.brand.withAlphaComponent(0.05)
         bubble3.layer.cornerRadius = 125
         view.insertSubview(bubble3, belowSubview: scrollView)
     }
@@ -614,7 +604,7 @@ class SignUpViewController: UIViewController {
         let lbl = UILabel()
         lbl.text = "Welcome"
         lbl.font = UIFont.systemFont(ofSize: 42, weight: .bold)
-        lbl.textColor = UIColor(red: 0.10, green: 0.10, blue: 0.12, alpha: 1)
+        lbl.textColor = .label
         lbl.translatesAutoresizingMaskIntoConstraints = false
         return lbl
     }()
@@ -623,7 +613,7 @@ class SignUpViewController: UIViewController {
         let lbl = UILabel()
         lbl.text = "Create an account"
         lbl.font = UIFont.systemFont(ofSize: 18, weight: .regular)
-        lbl.textColor = UIColor(red: 0.25, green: 0.25, blue: 0.28, alpha: 1)
+        lbl.textColor = .secondaryLabel
         lbl.translatesAutoresizingMaskIntoConstraints = false
         return lbl
     }()
@@ -632,7 +622,7 @@ class SignUpViewController: UIViewController {
         let lbl = UILabel()
         lbl.text = "Start your tech journey with Insider"
         lbl.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        lbl.textColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1)
+        lbl.textColor = .brand
         lbl.translatesAutoresizingMaskIntoConstraints = false
         return lbl
     }()
@@ -640,27 +630,27 @@ class SignUpViewController: UIViewController {
     // MARK: - Input Fields (Glass Style)
     private func createTextField(_ placeholder: String, icon: String) -> UIView {
         let container = UIView()
-        container.backgroundColor = UIColor.white.withAlphaComponent(0.75)
-        container.layer.cornerRadius = 18
-        container.layer.borderColor = UIColor.white.withAlphaComponent(0.9).cgColor
-        container.layer.borderWidth = 1.5
+        container.backgroundColor = UIColor.secondarySystemGroupedBackground
+        container.layer.cornerRadius = 29
+        container.layer.borderColor = UIColor.separator.cgColor
+        container.layer.borderWidth = 1.0
         container.translatesAutoresizingMaskIntoConstraints = false
-        container.layer.shadowColor = UIColor(red: 0.12, green: 0.25, blue: 0.55, alpha: 0.08).cgColor
+        container.layer.shadowColor = UIColor.label.withAlphaComponent(0.06).cgColor
         container.layer.shadowOffset = CGSize(width: 0, height: 4)
         container.layer.shadowRadius = 12
         container.layer.shadowOpacity = 1
         
         let iconView = UIImageView(image: UIImage(systemName: icon))
-        iconView.tintColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1)
+        iconView.tintColor = .brand
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.contentMode = .scaleAspectFit
         
         let textField = UITextField()
-        textField.textColor = UIColor(red: 0.10, green: 0.10, blue: 0.12, alpha: 1)
+        textField.textColor = .label
         textField.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         textField.attributedPlaceholder = NSAttributedString(
             string: placeholder,
-            attributes: [.foregroundColor: UIColor(red: 0.40, green: 0.40, blue: 0.45, alpha: 1)]
+            attributes: [.foregroundColor: UIColor.placeholderText]
         )
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.autocorrectionType = .no
@@ -698,14 +688,14 @@ class SignUpViewController: UIViewController {
     private let togglePasswordButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setImage(UIImage(systemName: "eye.slash.fill"), for: .normal)
-        btn.tintColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1)
+        btn.tintColor = .brand
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
     }()
     private let toggleConfirmPasswordButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setImage(UIImage(systemName: "eye.slash.fill"), for: .normal)
-        btn.tintColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1)
+        btn.tintColor = .brand
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
     }()
@@ -715,10 +705,10 @@ class SignUpViewController: UIViewController {
         btn.setTitle("Sign Up", for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         btn.setTitleColor(.white, for: .normal)
-        btn.backgroundColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1)
-        btn.layer.cornerRadius = 18
+        btn.backgroundColor = .brand
+        btn.layer.cornerRadius = 29
         btn.translatesAutoresizingMaskIntoConstraints = false
-        btn.layer.shadowColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 0.4).cgColor
+        btn.layer.shadowColor = UIColor.brand.withAlphaComponent(0.4).cgColor
         btn.layer.shadowOffset = CGSize(width: 0, height: 8)
         btn.layer.shadowRadius = 16
         btn.layer.shadowOpacity = 1
@@ -727,9 +717,9 @@ class SignUpViewController: UIViewController {
     
     private let dividerView: UIView = {
         let view = UIView(); view.translatesAutoresizingMaskIntoConstraints = false
-        let leftLine = UIView(); leftLine.backgroundColor = UIColor(red: 0.70, green: 0.70, blue: 0.75, alpha: 1); leftLine.translatesAutoresizingMaskIntoConstraints = false
-        let rightLine = UIView(); rightLine.backgroundColor = UIColor(red: 0.70, green: 0.70, blue: 0.75, alpha: 1); rightLine.translatesAutoresizingMaskIntoConstraints = false
-        let label = UILabel(); label.text = "or continue with"; label.font = UIFont.systemFont(ofSize: 13, weight: .medium); label.textColor = UIColor(red: 0.40, green: 0.40, blue: 0.45, alpha: 1); label.translatesAutoresizingMaskIntoConstraints = false
+        let leftLine = UIView(); leftLine.backgroundColor = .separator; leftLine.translatesAutoresizingMaskIntoConstraints = false
+        let rightLine = UIView(); rightLine.backgroundColor = .separator; rightLine.translatesAutoresizingMaskIntoConstraints = false
+        let label = UILabel(); label.text = "or continue with"; label.font = UIFont.systemFont(ofSize: 13, weight: .medium); label.textColor = .secondaryLabel; label.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(leftLine); view.addSubview(rightLine); view.addSubview(label)
         NSLayoutConstraint.activate([
             label.centerXAnchor.constraint(equalTo: view.centerXAnchor), label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -751,12 +741,12 @@ class SignUpViewController: UIViewController {
             btn.setImage(resized, for: .normal)
         } else {
             btn.setImage(UIImage(systemName: "globe"), for: .normal)
-            btn.tintColor = UIColor(red: 0.10, green: 0.10, blue: 0.12, alpha: 1)
+            btn.tintColor = .label
         }
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
-        btn.setTitleColor(UIColor(red: 0.10, green: 0.10, blue: 0.12, alpha: 1), for: .normal)
-        btn.backgroundColor = UIColor.white.withAlphaComponent(0.85)
-        btn.layer.cornerRadius = 16; btn.layer.borderColor = UIColor(red: 0.85, green: 0.87, blue: 0.90, alpha: 1).cgColor; btn.layer.borderWidth = 1.5
+        btn.setTitleColor(.label, for: .normal)
+        btn.backgroundColor = .secondarySystemGroupedBackground
+        btn.layer.cornerRadius = 28; btn.layer.borderColor = UIColor.separator.cgColor; btn.layer.borderWidth = 1.0
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
     }()
@@ -765,12 +755,13 @@ class SignUpViewController: UIViewController {
         let btn = UIButton(type: .system)
         let fullText = "Already have an account?  Sign In"
         let attr = NSMutableAttributedString(string: fullText)
+        let fullRange = NSRange(location: 0, length: fullText.count)
+        attr.addAttribute(.foregroundColor, value: UIColor.secondaryLabel, range: fullRange)
+        attr.addAttribute(.font, value: UIFont.systemFont(ofSize: 15, weight: .regular), range: fullRange)
         let range = (fullText as NSString).range(of: "Sign In")
-        attr.addAttribute(.foregroundColor, value: UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1), range: range)
+        attr.addAttribute(.foregroundColor, value: UIColor.brand, range: range)
         attr.addAttribute(.font, value: UIFont.systemFont(ofSize: 15, weight: .bold), range: range)
         btn.setAttributedTitle(attr, for: .normal)
-        btn.setTitleColor(UIColor(red: 0.40, green: 0.40, blue: 0.45, alpha: 1), for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .regular)
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
     }()
@@ -779,19 +770,37 @@ class SignUpViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupGradientBackground()
+        view.backgroundColor = .systemBackground
         setupUI()
         setupActions()
         setupKeyboardHandling()
         setupStaticBubbles()
+        updateDynamicColors()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        gradientLayer.frame = view.bounds
     }
     
-    private func setupGradientBackground() { view.layer.insertSublayer(gradientLayer, at: 0) }
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateDynamicColors()
+        }
+    }
+    
+    private func updateDynamicColors() {
+        // Refresh CGColor properties that don't auto-adapt
+        fullNameContainer.layer.borderColor = UIColor.separator.cgColor
+        fullNameContainer.layer.shadowColor = UIColor.label.withAlphaComponent(0.06).cgColor
+        emailContainer.layer.borderColor = UIColor.separator.cgColor
+        emailContainer.layer.shadowColor = UIColor.label.withAlphaComponent(0.06).cgColor
+        passwordContainer.layer.borderColor = UIColor.separator.cgColor
+        passwordContainer.layer.shadowColor = UIColor.label.withAlphaComponent(0.06).cgColor
+        confirmPasswordContainer.layer.borderColor = UIColor.separator.cgColor
+        confirmPasswordContainer.layer.shadowColor = UIColor.label.withAlphaComponent(0.06).cgColor
+        googleButton.layer.borderColor = UIColor.separator.cgColor
+    }
     
     private func setupUI() {
         view.addSubview(scrollView); scrollView.translatesAutoresizingMaskIntoConstraints = false

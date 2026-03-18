@@ -16,8 +16,7 @@ class NewAudioPlayerViewController: UIViewController {
     private var isPlaying = false
     private var currentTime: Float = 0.0
     private var duration: Float = 180.0
-    private var currentVolume: Float = 0.7
-    
+    private var isSeeking = false
     private var playbackTimer: Timer?
     private var allBriefs: [TopChoiceItem] = []
     private var currentBriefIndex: Int = 0
@@ -44,11 +43,9 @@ class NewAudioPlayerViewController: UIViewController {
     private let playPauseBtn = UIButton()
     private let backwardBtn = UIButton()
     private let forwardBtn = UIButton()
-    private let volumeSlider = UISlider()
     private let transcriptToggle = UIButton()
     private let transcriptTextView = UITextView()
     private let moreBtn = UIButton()
-    private let systemVolumeView = MPVolumeView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -191,7 +188,7 @@ class NewAudioPlayerViewController: UIViewController {
             utterance.voice = AVSpeechSynthesisVoice(language: "en-US") ?? AVSpeechSynthesisVoice(language: AVSpeechSynthesisVoice.currentLanguageCode())
             utterance.rate = 0.5
             utterance.pitchMultiplier = 1.0
-            utterance.volume = currentVolume
+            utterance.volume = 1.0
             
             speechSynthesizer.speak(utterance)
         }
@@ -289,14 +286,17 @@ class NewAudioPlayerViewController: UIViewController {
         
         // Removed shuffleBtn and repeatBtn from subviews
         [dismissIcon, albumArtContainer, titleLabel, sourceLabel,
-         currentTimeLabel, remainingTimeLabel, playbackSlider,
+         currentTimeLabel, remainingTimeLabel,
          playPauseBtn, backwardBtn, forwardBtn,
-         volumeSlider, moreBtn, transcriptToggle, systemVolumeView].forEach {
+         moreBtn, transcriptToggle].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
         
-        systemVolumeView.isHidden = true // Keep it hidden, we only use its slider logic
+        // Add slider LAST so it's on top of everything in the z-order 
+        playbackSlider.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(playbackSlider)
+        playbackSlider.isUserInteractionEnabled = true
         
         albumArtContainer.addSubview(albumArt)
         albumArt.translatesAutoresizingMaskIntoConstraints = false
@@ -330,10 +330,13 @@ class NewAudioPlayerViewController: UIViewController {
             self.transcriptTextView.attributedText = attributedString
             self.transcriptTextView.scrollRangeToVisible(absoluteRange)
             
-            let progress = (Float(absoluteRange.location) / Float(fullText.count)) * self.duration
-            self.currentTime = progress
-            self.playbackSlider.value = progress
-            self.updateTimeLabels()
+            // Calibrate the timer-driven currentTime with real speech progress
+            if !self.isSeeking {
+                let speechProgress = (Float(absoluteRange.location) / Float(fullText.count)) * self.duration
+                self.currentTime = speechProgress
+                self.playbackSlider.value = speechProgress
+                self.updateTimeLabels()
+            }
             
             if Int(self.currentTime) % 2 == 0 {
                 self.updateNowPlayingInfo()
@@ -344,6 +347,7 @@ class NewAudioPlayerViewController: UIViewController {
     private func setupTranscriptBox() {
         transcriptBox.alpha = 0
         transcriptBox.backgroundColor = .clear
+        transcriptBox.isUserInteractionEnabled = false
         
         transcriptTextView.backgroundColor = .clear
         transcriptTextView.textColor = .label
@@ -381,15 +385,13 @@ class NewAudioPlayerViewController: UIViewController {
         moreBtn.setImage(UIImage(systemName: "ellipsis.circle.fill"), for: .normal)
         
         playbackSlider.minimumTrackTintColor = brandColor
+        playbackSlider.maximumTrackTintColor = .systemGray5
         playbackSlider.maximumValue = duration
         playbackSlider.value = 0
+        playbackSlider.isContinuous = true
+        playbackSlider.isUserInteractionEnabled = true
         
-        volumeSlider.minimumValueImage = UIImage(systemName: "speaker.fill")
-        volumeSlider.maximumValueImage = UIImage(systemName: "speaker.wave.3.fill")
-        volumeSlider.minimumTrackTintColor = .systemGray3
-        volumeSlider.value = currentVolume
-        
-        [backwardBtn, forwardBtn, moreBtn, volumeSlider, transcriptToggle].forEach {
+        [backwardBtn, forwardBtn, moreBtn, transcriptToggle].forEach {
             $0.tintColor = .label
         }
     }
@@ -405,7 +407,7 @@ class NewAudioPlayerViewController: UIViewController {
         playbackSlider.addTarget(self, action: #selector(sliderTouchBegan), for: .touchDown)
         playbackSlider.addTarget(self, action: #selector(sliderTouchEnded), for: [.touchUpInside, .touchUpOutside])
         
-        volumeSlider.addTarget(self, action: #selector(volumeChanged), for: .valueChanged)
+
     }
     
     // MARK: - Remote Control & Metadata
@@ -551,6 +553,7 @@ class NewAudioPlayerViewController: UIViewController {
         
         UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0.5, options: .curveEaseInOut) {
             self.transcriptBox.alpha = self.isTranscriptVisible ? 1 : 0
+            self.transcriptBox.isUserInteractionEnabled = self.isTranscriptVisible
             self.transcriptBox.transform = self.isTranscriptVisible ? .identity : CGAffineTransform(scaleX: 0.9, y: 0.9)
             
             self.albumArtContainer.alpha = self.isTranscriptVisible ? 0.05 : 1
@@ -590,28 +593,34 @@ class NewAudioPlayerViewController: UIViewController {
     }
     
     @objc private func sliderTouchBegan() {
-        if isPlaying { pauseSpeech() }
-    }
-    
-    @objc private func sliderTouchEnded() {
+        isSeeking = true
+        // Pause the timer while user is dragging
+        stopPlayback()
         if isPlaying {
-            currentTime = playbackSlider.value
-            
-            if currentTime >= duration - 3 {
-                handleTrackEnd()
-            } else {
-                // Approximate character index based on duration ratio
-                let ratio = currentTime / duration
-                let characterOffset = Int(Float(fullArticleContent.count) * ratio)
-                startSpeech(atOffset: characterOffset)
-            }
+            speechSynthesizer.stopSpeaking(at: .immediate)
         }
     }
     
-    @objc private func volumeChanged(_ sender: UISlider) {
-        currentVolume = sender.value
-        updateSystemVolume(sender.value)
+    @objc private func sliderTouchEnded() {
+        isSeeking = false
+        currentTime = playbackSlider.value
+        updateTimeLabels()
+        
+        if currentTime >= duration - 3 {
+            handleTrackEnd()
+            return
+        }
+        
+        if isPlaying {
+            // Resume from the new position
+            startPlayback()
+            let ratio = currentTime / duration
+            let characterOffset = Int(Float(fullArticleContent.count) * ratio)
+            startSpeech(atOffset: characterOffset)
+        }
     }
+    
+
     
     @objc private func dismissPlayer() {
         stopPlayback()
@@ -624,15 +633,8 @@ class NewAudioPlayerViewController: UIViewController {
     
     private func setupGestures() {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
+        panGesture.delegate = self
         view.addGestureRecognizer(panGesture)
-        
-        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeLeft))
-        swipeLeft.direction = .left
-        view.addGestureRecognizer(swipeLeft)
-        
-        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeRight))
-        swipeRight.direction = .right
-        view.addGestureRecognizer(swipeRight)
     }
     
     @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
@@ -659,34 +661,16 @@ class NewAudioPlayerViewController: UIViewController {
         }
     }
     
-    @objc private func handleSwipeLeft() {
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        currentVolume = max(0.0, currentVolume - 0.1)
-        volumeSlider.setValue(currentVolume, animated: true)
-        updateSystemVolume(currentVolume)
-    }
+
     
-    @objc private func handleSwipeRight() {
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        currentVolume = min(1.0, currentVolume + 0.1)
-        volumeSlider.setValue(currentVolume, animated: true)
-        updateSystemVolume(currentVolume)
-    }
-    
-    private func updateSystemVolume(_ value: Float) {
-        for view in systemVolumeView.subviews {
-            if let slider = view as? UISlider {
-                slider.value = value
-                break
-            }
-        }
-    }
+
     
     // MARK: - Playback Management
+    
     private func startPlayback() {
         playbackTimer?.invalidate()
         playbackTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
+            guard let self = self, !self.isSeeking else { return }
             self.currentTime += 0.1
             if self.currentTime >= self.duration {
                 self.handleTrackEnd()
@@ -701,7 +685,6 @@ class NewAudioPlayerViewController: UIViewController {
         playbackTimer?.invalidate()
         playbackTimer = nil
     }
-    
     private func handleTrackEnd() {
         if currentBriefIndex < allBriefs.count - 1 {
             nextTrack()
@@ -824,11 +807,7 @@ class NewAudioPlayerViewController: UIViewController {
             forwardBtn.centerYAnchor.constraint(equalTo: playPauseBtn.centerYAnchor),
             forwardBtn.leadingAnchor.constraint(equalTo: playPauseBtn.trailingAnchor, constant: 50),
             
-            volumeSlider.topAnchor.constraint(equalTo: playPauseBtn.bottomAnchor, constant: 35),
-            volumeSlider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 45),
-            volumeSlider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -45),
-            
-            transcriptToggle.topAnchor.constraint(equalTo: volumeSlider.bottomAnchor, constant: 20),
+            transcriptToggle.topAnchor.constraint(equalTo: playPauseBtn.bottomAnchor, constant: 45),
             transcriptToggle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             transcriptToggle.widthAnchor.constraint(equalToConstant: 44),
             transcriptToggle.heightAnchor.constraint(equalToConstant: 44),
@@ -848,6 +827,22 @@ class NewAudioPlayerViewController: UIViewController {
 extension NewAudioPlayerViewController: AVSpeechSynthesizerDelegate {
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         DispatchQueue.main.async { self.handleTrackEnd() }
+    }
+}
+
+// MARK: - UIGestureRecognizerDelegate
+extension NewAudioPlayerViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        // Block the pan gesture from receiving touches on any interactive control
+        guard let touchedView = touch.view else { return true }
+        
+        let interactiveControls: [UIView] = [playbackSlider, playPauseBtn, backwardBtn, forwardBtn, transcriptToggle, moreBtn]
+        for control in interactiveControls {
+            if touchedView == control || touchedView.isDescendant(of: control) {
+                return false
+            }
+        }
+        return true
     }
 }
 

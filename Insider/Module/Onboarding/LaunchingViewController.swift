@@ -3,24 +3,23 @@ import UIKit
 class LaunchingViewController: UIViewController {
     
     // MARK: - UI Components
-    private let backgroundGradient = CAGradientLayer()
     
-    private let hugeILabel: UILabel = {
-        let label = UILabel()
-        label.text = "I"
-        label.font = .systemFont(ofSize: 240, weight: .black)
-        label.textColor = .white
-        label.textAlignment = .center
-        label.alpha = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    private let logoImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFit
+        iv.layer.cornerRadius = 32
+        iv.clipsToBounds = true
+        iv.alpha = 0
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        return iv
     }()
     
-    private let restOfLogoLabel: UILabel = {
+    private let appNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "nsider"
-        label.font = .systemFont(ofSize: 56, weight: .black)
+        label.text = "Insider"
+        label.font = .systemFont(ofSize: 42, weight: .black)
         label.textColor = .white
+        label.textAlignment = .center
         label.alpha = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -29,47 +28,20 @@ class LaunchingViewController: UIViewController {
     private let taglineLabel: UILabel = {
         let label = UILabel()
         label.text = "Chaos to Clarity"
-        if let descriptor = UIFont.systemFont(ofSize: 20, weight: .semibold).fontDescriptor.withDesign(.rounded) {
-            label.font = UIFont(descriptor: descriptor, size: 20)
+        if let descriptor = UIFont.systemFont(ofSize: 18, weight: .medium).fontDescriptor.withDesign(.rounded) {
+            label.font = UIFont(descriptor: descriptor, size: 18)
         } else {
-            label.font = .systemFont(ofSize: 20, weight: .semibold)
+            label.font = .systemFont(ofSize: 18, weight: .medium)
         }
-        label.textColor = .white
+        label.textColor = UIColor.white.withAlphaComponent(0.8)
         label.textAlignment = .center
         label.alpha = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    private let getStartedButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Get Started", for: .normal)
-        
-        if let descriptor = UIFont.systemFont(ofSize: 18, weight: .bold).fontDescriptor.withDesign(.rounded) {
-            button.titleLabel?.font = UIFont(descriptor: descriptor, size: 18)
-        } else {
-            button.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
-        }
-        
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = AppColor.Brand.button
-        button.layer.cornerRadius = 16
-        button.alpha = 0
-        button.transform = CGAffineTransform(translationX: 0, y: 30)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Unified Shadow from Theme
-        button.layer.shadowColor = AppColor.Brand.shadow.cgColor
-        button.layer.shadowOffset = CGSize(width: 0, height: 4)
-        button.layer.shadowRadius = 12
-        button.layer.shadowOpacity = 1.0
-        
-        return button
-    }()
-    
-    private var hugeItoFinalConstraint: NSLayoutConstraint?
-    
     // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -77,104 +49,92 @@ class LaunchingViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        startAmazingAnimation()
+        animateIn()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        backgroundGradient.frame = view.bounds
-    }
+    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     
     // MARK: - Setup
+    
     private func setupUI() {
-        view.backgroundColor = .white
+        // Solid brand color background
+        view.backgroundColor = .brand
         
-        // Background Gradient from Theme
-        backgroundGradient.colors = [
-            AppColor.Gradient.top.cgColor,
-            AppColor.Gradient.middle.cgColor,
-            AppColor.Gradient.bottom.cgColor
-        ]
-        backgroundGradient.locations = [0.0, 0.5, 1.0]
-        view.layer.insertSublayer(backgroundGradient, at: 0)
+        // Load app icon
+        if let appIcon = UIImage(named: "AppIcon") {
+            logoImageView.image = appIcon
+        } else {
+            // Fallback: use the app icon from the bundle
+            if let icons = Bundle.main.infoDictionary?["CFBundleIcons"] as? [String: Any],
+               let primary = icons["CFBundlePrimaryIcon"] as? [String: Any],
+               let iconFiles = primary["CFBundleIconFiles"] as? [String],
+               let lastIcon = iconFiles.last,
+               let icon = UIImage(named: lastIcon) {
+                logoImageView.image = icon
+            } else {
+                // Final fallback: SF Symbol
+                let config = UIImage.SymbolConfiguration(pointSize: 80, weight: .bold)
+                logoImageView.image = UIImage(systemName: "newspaper.fill", withConfiguration: config)
+                logoImageView.tintColor = .white
+                logoImageView.backgroundColor = UIColor.white.withAlphaComponent(0.15)
+            }
+        }
         
-        view.addSubview(hugeILabel)
-        view.addSubview(restOfLogoLabel)
+        view.addSubview(logoImageView)
+        view.addSubview(appNameLabel)
         view.addSubview(taglineLabel)
-        view.addSubview(getStartedButton)
-        
-        hugeItoFinalConstraint = hugeILabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         
         NSLayoutConstraint.activate([
-            hugeItoFinalConstraint!,
-            hugeILabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -60),
+            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -60),
+            logoImageView.widthAnchor.constraint(equalToConstant: 120),
+            logoImageView.heightAnchor.constraint(equalToConstant: 120),
             
-            restOfLogoLabel.centerYAnchor.constraint(equalTo: hugeILabel.centerYAnchor, constant: 18),
-            restOfLogoLabel.leadingAnchor.constraint(equalTo: hugeILabel.centerXAnchor, constant: -10),
+            appNameLabel.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 24),
+            appNameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            taglineLabel.topAnchor.constraint(equalTo: hugeILabel.bottomAnchor, constant: 20),
+            taglineLabel.topAnchor.constraint(equalTo: appNameLabel.bottomAnchor, constant: 8),
             taglineLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            getStartedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
-            getStartedButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-            getStartedButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
-            getStartedButton.heightAnchor.constraint(equalToConstant: 58)
         ])
-        
-        getStartedButton.addTarget(self, action: #selector(getStartedTapped), for: .touchUpInside)
     }
     
-    // MARK: - Amazing Animation
-    private func startAmazingAnimation() {
-        // Prepare Huge I
-        hugeILabel.transform = CGAffineTransform(scaleX: 2.0, y: 2.0)
-        hugeILabel.alpha = 0
-        hugeILabel.layer.shadowColor = AppColor.brand.cgColor
-        hugeILabel.layer.shadowRadius = 30
-        hugeILabel.layer.shadowOpacity = 0
+    // MARK: - Animation
+    
+    private func animateIn() {
+        // Animate logo
+        logoImageView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
         
-        // 1. Splash the huge 'I'
-        UIView.animate(withDuration: 1.5, delay: 0.2, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseOut) {
-            self.hugeILabel.alpha = 1
-            self.hugeILabel.transform = .identity
-            self.hugeILabel.layer.shadowOpacity = 0.5
-        } completion: { _ in
-            // 2. Shrink 'I' to its logo size and slide rest of letters out
-            self.hugeItoFinalConstraint?.constant = -65 // Slide 'I' to left
-            
-            let animator = UIViewPropertyAnimator(duration: 1.0, dampingRatio: 0.8) {
-                // Shrink text size (using transform instead of font for smoother animation if needed, but font is clearer here)
-                self.hugeILabel.font = .systemFont(ofSize: 56, weight: .black)
-                self.hugeILabel.textColor = .white 
-                self.hugeILabel.layer.shadowOpacity = 0
-                
-                // Reveal rest of text
-                self.restOfLogoLabel.alpha = 1
-                self.restOfLogoLabel.transform = CGAffineTransform(translationX: 20, y: 0)
-                
-                self.view.layoutIfNeeded()
-            }
-            
-            animator.addCompletion { _ in
-                // 3. Reveal tagline and button
-                UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut) {
-                    self.taglineLabel.alpha = 1
-                    self.taglineLabel.transform = .identity
-                    
-                    self.getStartedButton.alpha = 1
-                    self.getStartedButton.transform = .identity
-                }
-            }
-            
-            animator.startAnimation()
+        UIView.animate(withDuration: 0.8, delay: 0.1, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseOut) {
+            self.logoImageView.alpha = 1
+            self.logoImageView.transform = .identity
+        }
+        
+        // Animate app name
+        UIView.animate(withDuration: 0.6, delay: 0.4, options: .curveEaseOut) {
+            self.appNameLabel.alpha = 1
+        }
+        
+        // Animate tagline
+        UIView.animate(withDuration: 0.6, delay: 0.6, options: .curveEaseOut) {
+            self.taglineLabel.alpha = 1
+        }
+        
+        // Auto-transition after 2 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+            self?.transitionToOnboarding()
         }
     }
     
-    // MARK: - Actions
-    @objc private func getStartedTapped() {
+    // MARK: - Transition
+    
+    private func transitionToOnboarding() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let getStartedVC = storyboard.instantiateViewController(withIdentifier: "GetStartedViewControllerID") as? GetStartedViewController else {
-            return
+        let getStartedVC: UIViewController
+        
+        if let vc = storyboard.instantiateViewController(withIdentifier: "GetStartedViewControllerID") as? GetStartedViewController {
+            getStartedVC = vc
+        } else {
+            getStartedVC = GetStartedViewController()
         }
         
         if let window = view.window {

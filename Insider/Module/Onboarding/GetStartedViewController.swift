@@ -5,7 +5,7 @@ class GetStartedViewController: UIViewController {
     // MARK: - Data (Restored original colors)
     private let items: [(title: String, desc: String, emoji: String, color: UIColor, isDarkText: Bool)] = [
         ("Insider", "Chaos to Clarity", "", UIColor(red: 0.85, green: 0.90, blue: 0.98, alpha: 1), true),
-        ("Tech\nNews", "Latest developer trends delivered to your door.", "📰", UIColor(red: 0.35, green: 0.50, blue: 0.75, alpha: 1), false),
+        ("Tech\nInfo", "Latest developer trends delivered to your door.", "📖", UIColor(red: 0.35, green: 0.50, blue: 0.75, alpha: 1), false),
         ("Audio\nMode", "Listen to summaries while you commute.", "🎧", UIColor(red: 0.25, green: 0.40, blue: 0.65, alpha: 1), false),
         ("Smart\nFeed", "Content tailored to your specific interests.", "✨", UIColor(red: 0.15, green: 0.30, blue: 0.55, alpha: 1), false)
     ]
@@ -82,18 +82,20 @@ class GetStartedViewController: UIViewController {
     }
     
     private func setupButtons() {
-        func styleCircular(btn: UIButton, title: String) {
+        func styleBox(btn: UIButton, title: String) {
             btn.setTitle(title, for: .normal)
-            btn.titleLabel?.font = .systemFont(ofSize: 13, weight: .bold)
+            btn.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
             btn.setTitleColor(.white, for: .normal)
-            btn.backgroundColor = UIColor.black.withAlphaComponent(0.25)
-            btn.layer.cornerRadius = 25
+            btn.backgroundColor = UIColor.white.withAlphaComponent(0.2)
+            btn.layer.cornerRadius = 26
+            btn.layer.borderWidth = 1.5
+            btn.layer.borderColor = UIColor.white.withAlphaComponent(0.4).cgColor
             btn.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(btn)
         }
         
-        styleCircular(btn: nextButton, title: "SWIPE →")
-        styleCircular(btn: backButton, title: "← BACK")
+        styleBox(btn: nextButton, title: "Next →")
+        styleBox(btn: backButton, title: "← Back")
         
         nextButton.addTarget(self, action: #selector(handleNext), for: .touchUpInside)
         backButton.addTarget(self, action: #selector(handleBack), for: .touchUpInside)
@@ -110,7 +112,7 @@ class GetStartedViewController: UIViewController {
         getStartedButton.setTitle("GET STARTED", for: .normal)
         getStartedButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
         getStartedButton.setTitleColor(.white, for: .normal)
-        getStartedButton.backgroundColor = UIColor(red: 0.40, green: 0.55, blue: 0.85, alpha: 1)
+        getStartedButton.backgroundColor = .brand
         getStartedButton.layer.cornerRadius = 28
         getStartedButton.isHidden = true
         getStartedButton.translatesAutoresizingMaskIntoConstraints = false
@@ -122,19 +124,19 @@ class GetStartedViewController: UIViewController {
             skipButton.topAnchor.constraint(equalTo: progressContainer.bottomAnchor, constant: 8),
             skipButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             
-            nextButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
-            nextButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
-            nextButton.widthAnchor.constraint(equalToConstant: 100),
-            nextButton.heightAnchor.constraint(equalToConstant: 50),
+            nextButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -35),
+            nextButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            nextButton.widthAnchor.constraint(equalToConstant: 120),
+            nextButton.heightAnchor.constraint(equalToConstant: 52),
             
-            backButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
-            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            backButton.widthAnchor.constraint(equalToConstant: 100),
-            backButton.heightAnchor.constraint(equalToConstant: 50),
+            backButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -35),
+            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            backButton.widthAnchor.constraint(equalToConstant: 120),
+            backButton.heightAnchor.constraint(equalToConstant: 52),
             
             getStartedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -35),
-            getStartedButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            getStartedButton.widthAnchor.constraint(equalToConstant: 280),
+            getStartedButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            getStartedButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
             getStartedButton.heightAnchor.constraint(equalToConstant: 56)
         ])
     }
