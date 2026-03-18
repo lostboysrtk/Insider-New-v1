@@ -1,0 +1,146 @@
+//
+//  . gitignore
+//  Insider
+//
+//  Created by Sarthak Sharma on 03/02/26.
+//
+
+# Xcode
+#
+# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+
+## User settings
+xcuserdata/
+
+## Xcode 8 and earlier
+*.xcscmblueprint
+*.xccheckout
+
+## Xcode 4 - 6
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+## Build generated
+build/
+DerivedData/
+
+## Various settings
+*.xcuserstate
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Obj-C/Swift specific
+*.hmap
+
+## App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Swift Package Manager
+.build/
+.swiftpm/
+xcuserdata/
+*.xcodeproj
+Package.resolved
+.netrc
+
+# CocoaPods
+Pods/
+*.xcworkspace
+
+# Carthage
+Carthage/Build/
+Carthage/Checkouts
+
+# Accio dependency management
+Dependencies/
+.accio/
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+fastlane/README.md
+
+# Code Injection
+iOSInjectionProject/
+
+# Temporary files
+.temp/
+*.temp
+
+# VS Code
+.vscode/
+.history/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Thumbnails
+Thumbs.db
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# IMPORTANT: Sensitive Configuration Files
+# UNCOMMENT AND ADD YOUR SENSITIVE FILES HERE
+# SupbaseConfig.swift
+# Config.swift
+# Secrets.plist
+# GoogleService-Info.plist
+
+# Node modules (if you have any web components)
+node_modules/
+
+# Supabase Functions
+functions/node_modules/
+functions/.temp/
+functions/dist/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+*.swp
+*.swo
+*~
+.idea/
+
+# API Keys and Secrets (CRITICAL - UPDATE THESE)
+# Add your actual config files with API keys here
+**/APIKeys.swift
+**/Secrets.swift
+**/Config.swift
